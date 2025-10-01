@@ -7,7 +7,11 @@ const app=express();
 const cors=require('cors')
 const server=http.createServer(app);
 const io=new Server(server,{
-    cors:{origin:"*"}
+    cors: {
+        origin: ["https://connect-4-9kay.vercel.app"], // your frontend
+        methods: ["GET", "POST"],
+        credentials: true
+    }
 })
 const rooms={}
 io.on("connection",(socket)=>{
