@@ -13,11 +13,11 @@
                   ['','','','','','',''],
                   ['','','','','','',''],
                 ['','','','','','','']])
-      const [rowFilled,setRowFilled]=useState([5,5,5,5,5,5])
+      // const [rowFilled,setRowFilled]=useState([5,5,5,5,5,5])
       const [winner,setWinner]=useState("");
 
       const applyMove=(column,serverRow,symbol)=>{
-        const targetRow = serverRow !== undefined ? serverRow : rowFilled[column];
+        const targetRow = serverRow
           if (targetRow< 0) return; // column is full
           setBox(prevBox=> {
       const newBox = prevBox.map(row => [...row]);
@@ -69,20 +69,20 @@
 
       return newBox;
       });
-      setRowFilled(prevRow => {
-      const newRowFilled = [...prevRow];
-      newRowFilled[column] -= 1;
-      return newRowFilled;
-    });
+    //   setRowFilled(prevRow => {
+    //   const newRowFilled = [...prevRow];
+    //   newRowFilled[column] -= 1;
+    //   return newRowFilled;
+    // });
 
-    setClickCount(prev => prev + 1);
+    
   };
 
-
+console.log(clickCount)
   const handleMove = (column,roomId) => {
     const symbol = clickCount % 2 === 0 ? 'X' : 'O';
   socket.emit("make-move",{column,symbol,roomId})
-      
+      setClickCount(prev => prev + 1);
     
       
       
@@ -108,7 +108,7 @@
     ["", "", "", "", "", "", ""],
     ["", "", "", "", "", "", ""],
   ]);
-  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
+  // setRowFilled([5, 5, 5, 5, 5, 5, 5]);
   setClickCount(0);
 
       })

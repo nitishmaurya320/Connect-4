@@ -26,7 +26,7 @@ io.on("connection",(socket)=>{
             
              if (!roomPlayers[roomId]) {
                 roomPlayers[roomId]=[]; 
-                rooms[roomId] = [5,5,5,5,5,5];}
+                rooms[roomId] = [5,5,5,5,5,5,5];}
 
                 if(roomPlayers[roomId].length>=2){
                     socket.emit("room-full","Room is full, please try another room");
@@ -65,6 +65,7 @@ io.on("connection",(socket)=>{
             socket.to(roomId).emit("received-message",{name,message})
         })
         socket.on("make-move",({column,symbol,roomId})=>{
+               
              const row = rooms[roomId][column];
         if (row < 0) return; // column full
         rooms[roomId][column] -= 1;
@@ -77,7 +78,7 @@ io.on("connection",(socket)=>{
         })
 
         socket.on("accept-match",(roomId)=>{
-            rooms[roomId] = [5,5,5,5,5,5];
+            rooms[roomId] = [5,5,5,5,5,5,5];
             io.to(roomId).emit("restart-game")
         })
 })
