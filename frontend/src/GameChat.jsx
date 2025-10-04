@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Game from './Game'
-import Form from './form'
+import Form from './Form'
 const GameChat = ({name,roomId,opponentName}) => {
   const [chatOpen,setIsChatOpen]=useState(false)
   // const [waitingMessage,setWaitingMessage]=useState("")
