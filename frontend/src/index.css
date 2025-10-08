@@ -1,1 +1,64 @@
 @import "tailwindcss";
+
+
+
+.arrow {
+  display: flex;
+  transform: rotate(-45deg); /* Flip the arrow container to point left */
+  
+}
+
+.arrow span {
+  /* display: block; */
+  width: 20px;
+  height: 20px;
+  border-bottom: 3px solid red;
+  border-right: 3px solid red;
+  transform: rotate(45deg);
+  margin: -10px; 
+  animation: animate 2s infinite;
+}
+
+.arrow span:nth-child(2) {
+  animation-delay: -0.2s; /* Delay the animation for the middle arrow */
+}
+
+.arrow span:nth-child(3) {
+  animation-delay: -0.4s; /* Delay the animation for the last arrow */
+}
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+    transform: rotate(180deg) translate(-20px, -20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(180deg) translate(20px, 20px);
+  }
+}
+
+
+@keyframes flyAndFade {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-150px) scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes flyAndFadeoppo {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150px) scale(1.5);
+    opacity: 0;
+  }
+}

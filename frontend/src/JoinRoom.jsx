@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import socket from "./socket";
 import { useNavigate } from "react-router-dom";
 
-const JoinRoom = ({ setUserName, setRoomId ,setOpponentName}) => {
+const JoinRoom = ({ setUserName, setRoomId ,setOpponentName,setMyTurn}) => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
   const [roomFullMessage, setRoomFullMessage] = useState("");
   const [waitingMessage,setWaitingMessage]=useState("")
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +20,9 @@ const JoinRoom = ({ setUserName, setRoomId ,setOpponentName}) => {
   };
     socket.on("room-full", roomFullHandler);
     socket.on("joined", joinedHandler);
+    socket.on("your-turn",(ismyturn)=>{
+        setMyTurn(ismyturn)
+      })
     socket.on("waiting",(waitingHandler))
   socket.on("opponent-joined", ({ opponentName }) => {
     console.log(opponentName)

@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect,useState } from 'react'
 import socket from './socket';
 import { use } from 'react';
-const Form = ({name,roomId,chatOpen,setIsChatOpen,setOpponentName}) => {
+const Form = ({name,roomId,chatOpen,setIsChatOpen,setOpponentName,setNumChat}) => {
     const [message,setMessage]=useState("");
     
     const [messages,setMessages]=useState([])
@@ -17,7 +17,7 @@ useEffect(()=>{
             console.log(s);
         })
         socket.on("received-message",({name,message})=>{
-           
+           setNumChat(prev=>prev+1)
             setMessages((prev)=>[...prev,{name,message}])
         })
 
@@ -52,7 +52,7 @@ e.preventDefault()
 
   return (
     <>
-    <div className={`fixed right-[-100%] border-black border transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
+    <div className={`fixed right-[-100%] z-100 border-black border transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
       
     <div className={`bg-gray-100 p-4   flex flex-col h-[400px]`}>
   {/* Chat messages container */}
@@ -90,7 +90,9 @@ e.preventDefault()
   </form>
 
   {/* Current user name */}
-  <button onClick={()=>{setIsChatOpen(!chatOpen)}}>Close</button>
+  <button onClick={()=>{setIsChatOpen(!chatOpen)
+    setNumChat(0)
+  }}>Close</button>
 </div>
 </div>
 </>

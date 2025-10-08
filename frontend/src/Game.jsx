@@ -1,10 +1,10 @@
   import React, { useEffect, useState } from 'react'
   import socket from './socket';
-  const Game = ({id}) => {
+  const Game = ({id,myTurn}) => {
     console.log(id)
       // const [move,setMove]=useState('');
       const [clickCount,setClickCount]=useState(0);
-
+     
       const [waitingRematch,setWaitingRematch]=useState("")
       const [box,setBox]=useState([['','','','','','',''],
         
@@ -13,7 +13,7 @@
                   ['','','','','','',''],
                   ['','','','','','',''],
                 ['','','','','','','']])
-      // const [rowFilled,setRowFilled]=useState([5,5,5,5,5,5])
+      const [rowFilled,setRowFilled]=useState([5,5,5,5,5,5,5])
       const [winner,setWinner]=useState("");
 
       const applyMove=(column,serverRow,symbol)=>{
@@ -65,38 +65,60 @@
         setWinner(newBox[targetRow][column])
         
       }
-
+      
 
       return newBox;
       });
-    //   setRowFilled(prevRow => {
-    //   const newRowFilled = [...prevRow];
-    //   newRowFilled[column] -= 1;
-    //   return newRowFilled;
-    // });
+      
 
     
   };
 
 console.log(clickCount)
   const handleMove = (column,roomId) => {
-    const symbol = clickCount % 2 === 0 ? 'X' : 'O';
+     if (!myTurn || winner) return; // prevent moves when not your turn or game ended
+    // const symbol = myTurn ? 'X' : 'O';
+     
+    const symbol = clickCount % 2 === 0 ? '🔴' : '🔵';
+   const row = rowFilled[column];
+if (row < 0) return; // column full
+applyMove(column, row, symbol);
+     setRowFilled(prev => {
+    const newRow = [...prev];
+    newRow[column] -= 1;
+    return newRow;
+  });
+   setClickCount(prev => prev + 1);
   socket.emit("make-move",{column,symbol,roomId})
-      setClickCount(prev => prev + 1);
+      
     
       
       
     };
       useEffect(() => {
-      socket.on("received-move", ( column,row, symbol) => {
-        applyMove(column,row, symbol);
+         
+
+      socket.on("received-move", ( column,row, symbol,playerId) => {
+        
+        if(playerId!=socket.id){
+            setClickCount(prev => prev + 1);
+             applyMove(column,row, symbol);
+             
+             setRowFilled(prev => {
+            const newRow = [...prev];
+            newRow[column] = row - 1; // decrement as opponent filled
+            return newRow;
+
+      });
+        }
+       
       });
 
       socket.on("opponent-want-rematch",()=>{
         setWaitingRematch("Opponent wants rematch")
         
       })
-
+     
       socket.on("restart-game",()=>{
         setWaitingRematch("")
         setWinner("");
@@ -108,7 +130,7 @@ console.log(clickCount)
     ["", "", "", "", "", "", ""],
     ["", "", "", "", "", "", ""],
   ]);
-  // setRowFilled([5, 5, 5, 5, 5, 5, 5]);
+  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
   setClickCount(0);
 
       })
@@ -118,7 +140,7 @@ console.log(clickCount)
       };
     }, []);
 
-
+    console.log(myTurn)
 
     return (
     <>
@@ -158,22 +180,22 @@ console.log(clickCount)
     </div>
   )}
 
-    <div className="max-w-150 w-full ">
-      <div className="grid grid-cols-7 grid-rows-6  max-w-150   h-[360px] bg-green-200 border-2 w-full">
+    <div className="max-w-105 w-full ">
+      <div className="grid grid-cols-7   grid-rows-6 place-items-center  max-w-150   h-[360px] bg-yellow-500 border-2 w-full">
         {box.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
           <button
     key={`${rowIndex}-${colIndex}`}
-    onClick={() => handleMove(colIndex,id)}
-    className="w-full h-full border border-red-500 flex items-end justify-center overflow-hidden relative"
+    onClick={() => handleMove(colIndex,id)}  
+    className="w-[70%] h-[70%] border bg-white rounded-[50%] border-red-500 flex items-center justify-center overflow-hidden "
   >
     <div
-      className={`text-2xl transition-transform duration-300`}
+      className={`text-4xl  flex items-center justify-center transition-transform duration-300`}
       style={{
-        transform: cell ? 'translateY(-50%)' : 'translateY(-100%)',
+        transform: cell ? 'translateY(-6%)' : 'translateY(-100%)',
       }}
     >
-      {cell}
+      {cell} 
     </div>
   </button>
 
