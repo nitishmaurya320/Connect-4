@@ -8,7 +8,7 @@ const cors=require('cors')
 const server=http.createServer(app);
 const io=new Server(server,{
     cors: {
-        origin: ["https://connect-4-9kay.vercel.app/"],// your frontend
+        origin: ["https://connect-4-9kay.vercel.app"],// your frontend
         methods: ["GET", "POST"],
         credentials: true
     }
