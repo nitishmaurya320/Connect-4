@@ -52,9 +52,9 @@ e.preventDefault()
 
   return (
     <>
-    <div className={`fixed right-[-100%] z-100 border-black border transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
+    <div className={`fixed  right-[-100%] z-100 shadow-2xl  transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
       
-    <div className={`bg-gray-100 p-4   flex flex-col h-[400px]`}>
+    <div className={`bg-gray-100 p-4 rounded-2xl  flex flex-col h-[400px]`}>
   {/* Chat messages container */}
   <div className='flex-1 overflow-y-auto  mb-4'>
     {messages.map((m, i) => (
