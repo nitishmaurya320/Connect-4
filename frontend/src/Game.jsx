@@ -1,12 +1,16 @@
   import React, { useEffect, useState } from 'react'
   import socket from './socket';
-  const Game = ({id,myTurn}) => {
+import { useNavigate } from 'react-router-dom';
+ 
+  const Game = ({id,myTurn,mode}) => {
     console.log(id)
       // const [move,setMove]=useState('');
       const [clickCount,setClickCount]=useState(0);
-     
+     const [leaveMessage,setLeaveMessage]=useState("")
       const [waitingRematch,setWaitingRematch]=useState("")
+      const [drawMessage,setDrawMessage]=useState(false)
       const [box,setBox]=useState([['','','','','','',''],
+
         
                   ['','','','','','',''],
                   ['','','','','','',''],
@@ -15,6 +19,10 @@
                 ['','','','','','','']])
       const [rowFilled,setRowFilled]=useState([5,5,5,5,5,5,5])
       const [winner,setWinner]=useState("");
+      const handleJoinRoom=()=>{
+       window.location.href="/join-room"
+         
+      }
 
       const applyMove=(column,serverRow,symbol)=>{
         const targetRow = serverRow
@@ -30,47 +38,88 @@
       
       
           newBox[targetRow][column] = symbol
-      if(column>=3&&(newBox[targetRow][column]===newBox[targetRow][column-1])&&(newBox[targetRow][column-1]===newBox[targetRow][column-2])&&(newBox[targetRow][column-2]===newBox[targetRow][column-3])||
-      column<=3&&(newBox[targetRow][column]===newBox[targetRow][column+1])&&(newBox[targetRow][column+1]===newBox[targetRow][column+2])&&(newBox[targetRow][column+2]===newBox[targetRow][column+3])||
-      (targetRow>=3)&&(column>=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column-1] &&
-        newBox[targetRow-1][column-1] === newBox[targetRow-2][column-2] &&
-        newBox[targetRow-2][column-2] === newBox[targetRow-3][column-3])||
+      // if(column>=3&&(newBox[targetRow][column]===newBox[targetRow][column-1])&&(newBox[targetRow][column-1]===newBox[targetRow][column-2])&&(newBox[targetRow][column-2]===newBox[targetRow][column-3])||
+      // column<=3&&(newBox[targetRow][column]===newBox[targetRow][column+1])&&(newBox[targetRow][column+1]===newBox[targetRow][column+2])&&(newBox[targetRow][column+2]===newBox[targetRow][column+3])||
+      // (targetRow>=3)&&(column>=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column-1] &&
+      //   newBox[targetRow-1][column-1] === newBox[targetRow-2][column-2] &&
+      //   newBox[targetRow-2][column-2] === newBox[targetRow-3][column-3])||
 
-        (targetRow<=2&&column<=3)&&(newBox[targetRow][column] === newBox[targetRow+1][column+1] &&
-        newBox[targetRow+1][column+1] === newBox[targetRow+2][column+2] &&
-        newBox[targetRow+2][column+2] === newBox[targetRow+3][column+3])||
+      //   (targetRow<=2&&column<=3)&&(newBox[targetRow][column] === newBox[targetRow+1][column+1] &&
+      //   newBox[targetRow+1][column+1] === newBox[targetRow+2][column+2] &&
+      //   newBox[targetRow+2][column+2] === newBox[targetRow+3][column+3])||
 
-        (targetRow<=2)&&(newBox[targetRow][column] === newBox[targetRow+1][column] &&
-        newBox[targetRow+1][column] === newBox[targetRow+2][column] &&
-        newBox[targetRow+2][column] === newBox[targetRow+3][column])||
+      //   (targetRow<=2)&&(newBox[targetRow][column] === newBox[targetRow+1][column] &&
+      //   newBox[targetRow+1][column] === newBox[targetRow+2][column] &&
+      //   newBox[targetRow+2][column] === newBox[targetRow+3][column])||
 
-        (targetRow>=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column] &&
-        newBox[targetRow-1][column] === newBox[targetRow-2][column] &&
-        newBox[targetRow-2][column] === newBox[targetRow-3][column])||
+      //   (targetRow>=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column] &&
+      //   newBox[targetRow-1][column] === newBox[targetRow-2][column] &&
+      //   newBox[targetRow-2][column] === newBox[targetRow-3][column])||
 
-        (targetRow>=3&&column<=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column+1] &&
-        newBox[targetRow-1][column+1] === newBox[targetRow-2][column+2] &&
-        newBox[targetRow-2][column+2] === newBox[targetRow-3][column+3])||
+      //   (targetRow>=3&&column<=3)&&(newBox[targetRow][column] === newBox[targetRow-1][column+1] &&
+      //   newBox[targetRow-1][column+1] === newBox[targetRow-2][column+2] &&
+      //   newBox[targetRow-2][column+2] === newBox[targetRow-3][column+3])||
 
-        (targetRow<=2&&column>=3)&&(newBox[targetRow][column] === newBox[targetRow+1][column-1] &&
-        newBox[targetRow+1][column-1] === newBox[targetRow+2][column-2] &&
-        newBox[targetRow+2][column-2] === newBox[targetRow+3][column-3])
+      //   (targetRow<=2&&column>=3)&&(newBox[targetRow][column] === newBox[targetRow+1][column-1] &&
+      //   newBox[targetRow+1][column-1] === newBox[targetRow+2][column-2] &&
+      //   newBox[targetRow+2][column-2] === newBox[targetRow+3][column-3])
         
 
         
       
         
         
-      ){
-        setTimeout(()=>{
-            setWinner(newBox[targetRow][column])
-        },800)
+      // ){
+      //   setTimeout(()=>{
+      //       setWinner(newBox[targetRow][column])
+      //   },800)
           
        
         
-      }
-      
+      // }
+      const checkWin = (board, row, col, symbol) => {
+  const directions = [
+    [0, 1],  // → horizontal
+    [1, 0],  // ↓ vertical
+    [1, 1],  // ↘ diagonal
+    [1, -1], // ↙ diagonal
+  ];
 
+  for (let [dr, dc] of directions) {
+    let count = 1;
+
+    // Check one direction
+    for (let i = 1; i < 4; i++) {
+      const r = row + dr * i;
+      const c = col + dc * i;
+      if (r < 0 || r >= 6 || c < 0 || c >= 7 || board[r][c] !== symbol) break;
+      count++;
+    }
+
+    // Check the opposite direction
+    for (let i = 1; i < 4; i++) {
+      const r = row - dr * i;
+      const c = col - dc * i;
+      if (r < 0 || r >= 6 || c < 0 || c >= 7 || board[r][c] !== symbol) break;
+      count++;
+    }
+
+    if (count >= 4){
+       return true;
+    }
+  }
+
+  return false;
+};
+
+      if(clickCount+1===42){
+         setDrawMessage(true)
+         socket.emit("match-draw",{data:true,id})
+
+      }
+      if (checkWin(newBox, targetRow, column, symbol)) {
+  setTimeout(() => setWinner(symbol), 800);
+}
       return newBox;
       });
       
@@ -94,7 +143,10 @@ applyMove(column, row, symbol);
     return newRow;
   });
    setClickCount(prev => prev + 1);
-  socket.emit("make-move",{column,symbol,roomId})
+   if(mode!="local"){
+     socket.emit("make-move",{column,symbol,roomId})
+   }
+ 
       
     
       
@@ -102,11 +154,14 @@ applyMove(column, row, symbol);
     };
       useEffect(() => {
          
+        if(mode!=="local"){
 
+        
       socket.on("received-move", ( column,row, symbol,playerId) => {
         
         if(playerId!=socket.id){
             setClickCount(prev => prev + 1);
+          
              applyMove(column,row, symbol);
              
              setRowFilled(prev => {
@@ -137,9 +192,18 @@ applyMove(column, row, symbol);
   ]);
   setRowFilled([5, 5, 5, 5, 5, 5, 5]);
   setClickCount(0);
+  setDrawMessage("")
 
       })
-
+        socket.on("playerLeft",(data)=>{
+          
+          setLeaveMessage(data.message)
+          
+        })
+        socket.on("match-draw",(data)=>{
+          setDrawMessage(data)
+        })
+      }
       return () => {
         socket.off("received-move");
       };
@@ -149,6 +213,52 @@ applyMove(column, row, symbol);
 
     return (
     <>
+    {  drawMessage&&<div className="fixed inset-0 flex items-center justify-center  bg-opacity-60 z-50">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-3">Match Draw</h2>
+        
+        
+        <button
+          onClick={() => {
+          if(mode==="local"){
+             setWinner("");
+          setBox([
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+  ]);
+  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
+  setClickCount(0);
+  setDrawMessage("")
+            return;
+          }
+          socket.emit("play-again", id);
+          setWaitingRematch("Waiting for your opponent to confirm rematch");
+        }}
+          className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl transition duration-300"
+        >
+          Play Again
+        </button>
+        
+      </div>
+    </div>}
+    {  leaveMessage&&<div className="fixed inset-0 flex items-center justify-center  bg-opacity-60 z-50">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-3">⚠️ Opponent Left</h2>
+        <p className="text-gray-600 mb-6">{leaveMessage || "Your opponent has left the game."}</p>
+        
+        <button
+          onClick={handleJoinRoom}
+          className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl transition duration-300"
+        >
+          Join Another Room
+        </button>
+        
+      </div>
+    </div>}
     {winner && (
   <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50 backdrop-blur-sm animate-fadeIn">
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl shadow-2xl p-10 w-96 text-center transform scale-95 animate-scaleUp">
@@ -164,6 +274,10 @@ applyMove(column, row, symbol);
       {/* Play Again Button */}
       <button
         onClick={() => {
+          if(mode==="local"){
+            window.location.reload();
+            return;
+          }
           socket.emit("play-again", id);
           setWaitingRematch("Waiting for your opponent to confirm rematch");
         }}
@@ -177,7 +291,7 @@ applyMove(column, row, symbol);
         {[...Array(30)].map((_, i) => (
           <span
             key={i}
-            className={`absolute w-2 h-2 bg-yellow-300 rounded-full animate-confetti`}
+            className={`absolute w-2 h-2 bg-yellow-300 rounded-full confetti`}
             style={{
               left: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 1}s`,

@@ -8,11 +8,12 @@ const cors=require('cors')
 const server=http.createServer(app);
 const io=new Server(server,{
     cors: {
-        origin: ["https://connect-4-9kay.vercel.app"],// your frontend
+        origin: [process.env.FRONTEND_URL],// your frontend
         methods: ["GET", "POST"],
         credentials: true
     }
 })
+// https://connect-4-9kay.vercel.app
 const rooms={}
 const roomPlayers={}
 const roomturns={}
@@ -110,6 +111,41 @@ io.on("connection",(socket)=>{
             rooms[roomId] = [5,5,5,5,5,5,5];
             io.to(roomId).emit("restart-game")
         })
+
+       socket.on("disconnect", () => {
+  console.log("user disconnected:", socket.id);
+
+  // Find which room the player was in
+  let roomId = null;
+  for (const id in roomPlayers) {
+    const players = roomPlayers[id];
+    const playerIndex = players.findIndex((p) => p.id === socket.id);
+    if (playerIndex !== -1) {
+      roomId = id;
+      players.splice(playerIndex, 1); // remove the player
+      console.log(`Removed ${socket.id} from room ${roomId}`);
+
+      // Notify the other player that their opponent left       
+       players.forEach(p => {
+        io.to(p.id).emit("playerLeft", { message: `Opponent left the game.` });
+      });
+
+
+      // Cleanup if the room is empty
+      if (players.length === 0) {
+        delete roomPlayers[id];
+        delete rooms[id];
+        delete roomturns[id];
+        console.log(`Room ${roomId} deleted because it's empty.`);
+      }
+      break;
+    }
+  }
+});
+
+socket.on("match-draw",({data,id})=>{
+    io.to(id).emit("match-draw",data)
+})
 })
 app.get("/",(req,res)=>{
     res.send("Hello")

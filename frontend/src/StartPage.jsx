@@ -5,7 +5,7 @@ function GameStartPage() {
   const navigate = useNavigate();
 
   const handlePlayWithFriend = () => {
-    console.log('Navigating to "Play with Friend" setup...');
+    navigate("/local-game")
   };
 
   const handleCreateRoom = () => {
@@ -51,10 +51,7 @@ function GameStartPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-10 text-sm text-purple-700 text-center">
-        <p>Made with ❤️ using React & Tailwind CSS</p>
-      </footer>
+     
     </div>
   );
 }

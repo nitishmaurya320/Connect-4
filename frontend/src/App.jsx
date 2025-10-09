@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import GameChat from './GameChat'
 import GameStartPage from './StartPage'
 import JoinRoom from './JoinRoom'
+import LocalGame from './LocalGame'
 
 
   const App = () => {
@@ -18,6 +19,7 @@ import JoinRoom from './JoinRoom'
         <Route path='/' element={<GameStartPage/>}/>
         <Route  path='/join-room' element={<JoinRoom setOpponentName={setOpponentName} setMyTurn={setMyTurn} setUserName={setUserName} setRoomId={setRoomId}/>}/>
         <Route   path='/game' element={<GameChat myTurn={myTurn} name={userName} opponentName={opponentName} roomId={roomId}/>}/>
+        <Route path='/local-game' element={<LocalGame/>}/>
       </Routes>
      
       

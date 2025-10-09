@@ -20,7 +20,7 @@ useEffect(()=>{
            setNumChat(prev=>prev+1)
             setMessages((prev)=>[...prev,{name,message}])
         })
-
+      
        
      
         
@@ -35,6 +35,7 @@ useEffect(()=>{
   socket.off("room-full");
   socket.off("waiting");
   socket.off("start-game");
+  socket.off("playerLeft")
   // socket.off("opponent-joined",handleOpponent);
 };
         
@@ -52,7 +53,7 @@ e.preventDefault()
 
   return (
     <>
-    <div className={`fixed  right-[-100%] z-100 shadow-2xl  transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
+    <div className={`fixed right-[-100%] z-100 shadow-2xl  transition-all duration-550  ${chatOpen?"right-[0px]":"right-[-100%]"}`}>
       
     <div className={`bg-gray-100 p-4 rounded-2xl  flex flex-col h-[400px]`}>
   {/* Chat messages container */}

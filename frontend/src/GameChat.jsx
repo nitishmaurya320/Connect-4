@@ -10,8 +10,9 @@ const GameChat = ({name,roomId,opponentName,myTurn}) => {
     const [emojis, setEmojis] = useState([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [receivedEmoji,setReceivedEmoji]=useState([])
+    
     const backgroundAudio=new Audio("/background-music.mp3")
-    // backgroundAudio.volume=0.1
+    
     // backgroundAudio.play()
 
 const emoji = ["😭", "😂", "😎", "😜", "😍"];
@@ -85,9 +86,7 @@ const handleClick = (selectedEmoji) => {
   >
     <div className=' w-[100%] max-w-[490px] justify-center items-center flex flex-col '>
     <div className='flex justify-center items-center ml-auto'>
-       <div className=' relative border-4 items-center justify-center'>
       
-       </div>
       {
         opponentTurn&&<div className="arrow-container rotate-180 mr-auto  h-full w-[100px] flex justify-center items-center">
   <div class="arrow-oppo">
@@ -159,7 +158,7 @@ const handleClick = (selectedEmoji) => {
       {emojis.map((emo,id) => (
         <span
           key={emo.id}
-          className="absolute right-0   text-3xl"
+          className="absolute right-4   text-3xl"
           style={{
             // left: `${50 + (Math.random() - 0.5) * 60}%`,
             animation: "flyAndFade 2s ease-out forwards",
