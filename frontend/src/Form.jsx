@@ -10,7 +10,7 @@ const Form = ({name,roomId,chatOpen,setIsChatOpen,setOpponentName,setNumChat}) =
     
 useEffect(()=>{
         socket.on("connect",()=>{   
-            console.log("connected",socket.id)
+           
         })
 
         socket.on("welcome",(s)=>{

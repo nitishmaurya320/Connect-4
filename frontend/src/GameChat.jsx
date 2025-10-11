@@ -11,9 +11,9 @@ const GameChat = ({name,roomId,opponentName,myTurn}) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [receivedEmoji,setReceivedEmoji]=useState([])
     
-    const backgroundAudio=new Audio("/background-music.mp3")
+   
     
-    // backgroundAudio.play()
+   
 
 const emoji = ["😭", "😂", "😎", "😜", "😍"];
 
@@ -50,13 +50,13 @@ const handleClick = (selectedEmoji) => {
 
   
     setOpponentTurn(!myTurn)
-    console.log(opponentTurn)
+    
   },[myTurn])
 
   useEffect(()=>{
       socket.on("received-emoji",(emo)=>{
         if (isPlaying) return; 
-      console.log(emo.emoji)
+      
         if(emo.emoji==="😂"){
       const audio = Math.random()>0.5?new Audio("/laugh1.mp3"):new Audio("/laugh2.mp3")
   
@@ -89,7 +89,7 @@ const handleClick = (selectedEmoji) => {
       
       {
         opponentTurn&&<div className="arrow-container rotate-180 mr-auto  h-full w-[100px] flex justify-center items-center">
-  <div class="arrow-oppo">
+  <div className="arrow-oppo">
     <span></span>
     <span></span>
     <span></span>
@@ -127,7 +127,7 @@ const handleClick = (selectedEmoji) => {
 
       {
         myTurn&&<div className="arrow-container mr-auto  h-full w-[100px] flex justify-center items-center">
-  <div class="arrow-my">
+  <div className="arrow-my">
     <span></span>
     <span></span>
     <span></span>
@@ -139,6 +139,7 @@ const handleClick = (selectedEmoji) => {
     { emoji.map((emo,i)=>{
       return(
           <button
+          key={i}
         onClick={()=>{
           const id = Date.now()
   const newEmoji = { id, emoji: emo }

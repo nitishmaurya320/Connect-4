@@ -13,7 +13,7 @@ const io=new Server(server,{
         credentials: true
     }
 })
-// https://connect-4-9kay.vercel.app
+
 const rooms={}
 const roomPlayers={}
 const roomturns={}

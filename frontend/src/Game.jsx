@@ -3,12 +3,13 @@
 import { useNavigate } from 'react-router-dom';
  
   const Game = ({id,myTurn,mode}) => {
-    console.log(id)
+   
       // const [move,setMove]=useState('');
       const [clickCount,setClickCount]=useState(0);
      const [leaveMessage,setLeaveMessage]=useState("")
       const [waitingRematch,setWaitingRematch]=useState("")
       const [drawMessage,setDrawMessage]=useState(false)
+      const [winningCells,setWinningCells]=useState([])
       const [box,setBox]=useState([['','','','','','',''],
 
         
@@ -33,7 +34,7 @@ import { useNavigate } from 'react-router-dom';
       
       
       
-      console.log(targetRow,column)
+      
 
       
       
@@ -87,13 +88,14 @@ import { useNavigate } from 'react-router-dom';
 
   for (let [dr, dc] of directions) {
     let count = 1;
-
+      let cells=[{row,col}]
     // Check one direction
     for (let i = 1; i < 4; i++) {
       const r = row + dr * i;
       const c = col + dc * i;
       if (r < 0 || r >= 6 || c < 0 || c >= 7 || board[r][c] !== symbol) break;
-      count++;
+      cells.push({row:r,col:c})
+      
     }
 
     // Check the opposite direction
@@ -101,15 +103,17 @@ import { useNavigate } from 'react-router-dom';
       const r = row - dr * i;
       const c = col - dc * i;
       if (r < 0 || r >= 6 || c < 0 || c >= 7 || board[r][c] !== symbol) break;
-      count++;
+      cells.push({row:r,col:c})
+      
     }
 
-    if (count >= 4){
-       return true;
+    if (cells.length >= 4){
+
+       return {winner:symbol,cells} 
     }
   }
 
-  return false;
+  return null;
 };
 
       if(clickCount+1===42){
@@ -117,19 +121,19 @@ import { useNavigate } from 'react-router-dom';
          socket.emit("match-draw",{data:true,id})
 
       }
-      if (checkWin(newBox, targetRow, column, symbol)) {
-  setTimeout(() => setWinner(symbol), 800);
-}
-      return newBox;
+     const result = checkWin(newBox, targetRow, column, symbol);
+if (result) {
+  setWinningCells(result.cells);
+  setTimeout(() => setWinner(result.winner), 2000);
+} return newBox;
       });
       
 
     
   };
 
-console.log(clickCount)
   const handleMove = (column,roomId) => {
-     if (!myTurn || winner) return; // prevent moves when not your turn or game ended
+     if (!myTurn || winningCells.length===4) return; // prevent moves when not your turn or game ended
     // const symbol = myTurn ? 'X' : 'O';
      const audio=new Audio('/clack.mp3')
      audio.play()
@@ -148,10 +152,28 @@ applyMove(column, row, symbol);
    }
  
       
-    
+   
       
       
     };
+    
+     const clearBoard=()=>{
+      setWinningCells([]);
+         setWaitingRematch("")
+        setWinner("");
+          setBox([
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", ""],
+  ]);
+  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
+  setClickCount(0);
+  setDrawMessage("")
+  
+    }
       useEffect(() => {
          
         if(mode!=="local"){
@@ -180,19 +202,7 @@ applyMove(column, row, symbol);
       })
      
       socket.on("restart-game",()=>{
-        setWaitingRematch("")
-        setWinner("");
-          setBox([
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-  ]);
-  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
-  setClickCount(0);
-  setDrawMessage("")
+        clearBoard();
 
       })
         socket.on("playerLeft",(data)=>{
@@ -209,7 +219,7 @@ applyMove(column, row, symbol);
       };
     }, []);
 
-    console.log(myTurn)
+ 
 
     return (
     <>
@@ -221,18 +231,7 @@ applyMove(column, row, symbol);
         <button
           onClick={() => {
           if(mode==="local"){
-             setWinner("");
-          setBox([
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", ""],
-  ]);
-  setRowFilled([5, 5, 5, 5, 5, 5, 5]);
-  setClickCount(0);
-  setDrawMessage("")
+             clearBoard();
             return;
           }
           socket.emit("play-again", id);
@@ -275,7 +274,7 @@ applyMove(column, row, symbol);
       <button
         onClick={() => {
           if(mode==="local"){
-            window.location.reload();
+            clearBoard();
             return;
           }
           socket.emit("play-again", id);
@@ -345,14 +344,14 @@ applyMove(column, row, symbol);
           <button
     key={`${rowIndex}-${colIndex}`}
     onClick={() => handleMove(colIndex,id)}  
-    className="w-[70%] h-[70%]  bg-white rounded-[50%]   flex items-center justify-center overflow-hidden "
+    className="w-[70%] h-[70%]  bg-white   rounded-[50%]  flex items-center justify-center"
   >
-    <div
-      className={`h-full w-full text-[9vw] md:text-[55px] ${cell?"animate-drop":""}  rounded-[50%] flex items-center justify-center transition-transform duration-800`}
+    <div className={`h-full w-full ${cell ? "animate-drop" : ""} rounded-full flex items-center justify-center`}>
+  <div className={`${winningCells.some(c => c.row === rowIndex && c.col === colIndex) ? (cell==='🔴'?"animate-pulse-red":"animate-pulse-blue"): ""} h-full overflow-hidden rounded-[50%] text-[9vw] md:text-[55px]  w-full flex items-center justify-center`}>
+    {cell}
+  </div>
+</div>
 
-    >
-      {cell} 
-    </div>
   </button>
 
           ))

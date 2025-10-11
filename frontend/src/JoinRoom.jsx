@@ -25,7 +25,7 @@ const JoinRoom = ({ setUserName, setRoomId ,setOpponentName,setMyTurn}) => {
       })
     socket.on("waiting",(waitingHandler))
   socket.on("opponent-joined", ({ opponentName }) => {
-    console.log(opponentName)
+    
 
    setOpponentName(opponentName)
     navigate("/game"); // now navigate after opponent info received
